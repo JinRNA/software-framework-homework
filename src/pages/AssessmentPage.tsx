@@ -26,6 +26,15 @@ import type {
   EducationLevel,
   SalaryRange,
 } from '../types';
+import { BrainCircuit, GraduationCap, Dumbbell, Heart, MapPin, Sparkles, Check, ChevronRight, ChevronLeft, Hexagon } from 'lucide-react';
+
+const sectionIconMap: Record<string, any> = {
+  personality: BrainCircuit,
+  professional: GraduationCap,
+  skills: Dumbbell,
+  interests: Heart,
+  location: MapPin
+};
 
 const AssessmentPage: React.FC = () => {
   const navigate = useNavigate();
@@ -73,35 +82,35 @@ const AssessmentPage: React.FC = () => {
       case 'personality': {
         const vals = Object.values(personality);
         if (vals.some(v => v === 0)) {
-          newErrors.personality = '请完成所有性格特质评分';
+          newErrors.personality = '未能检测到完整基准参数，请补全特质评估面板。';
         }
         break;
       }
       case 'skills': {
         const vals = Object.values(skills);
         if (vals.some(v => v === 0)) {
-          newErrors.skills = '请完成所有技能评分';
+          newErrors.skills = '技能矩阵残缺，请设定全量技能刻度。';
         }
         break;
       }
       case 'interests': {
         if (interests.selectedInterests.length < 2) {
-          newErrors.interests = '请至少选择2个感兴趣的领域';
+          newErrors.interests = '引擎需要至少2个偏好方向锚点以启动推演。';
         }
         if (interests.workTypePreference.length === 0) {
-          newErrors.workType = '请至少选择1种工作类型偏好';
+          newErrors.workType = '工作模型未设定，请选定介入方式。';
         }
         break;
       }
       case 'professional': {
         if (!professional.major) {
-          newErrors.major = '请选择你的专业';
+          newErrors.major = '未输入所属知识网络（专业领域）。';
         }
         break;
       }
       case 'location': {
         if (!location.city) {
-          newErrors.city = '请选择期望工作城市';
+          newErrors.city = '物理降落坐标未锚定，请选定城市。';
         }
         break;
       }
@@ -144,7 +153,7 @@ const AssessmentPage: React.FC = () => {
     };
 
     // Simulate calculation delay for UX
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 2500));
 
     const report = calculateMatch(assessmentData);
 
@@ -176,44 +185,25 @@ const AssessmentPage: React.FC = () => {
   // Loading overlay
   if (isCalculating) {
     return (
-      <div style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        background: 'var(--color-bg-primary)',
-        paddingTop: '64px',
-      }}>
-        <div className="animate-fade-in" style={{ textAlign: 'center' }}>
-          <div style={{
-            fontSize: '4rem',
-            marginBottom: '1.5rem',
-            animation: 'pulse-glow 2s ease-in-out infinite',
-            width: '100px',
-            height: '100px',
-            borderRadius: '50%',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto 1.5rem',
-            background: 'rgba(99, 102, 241, 0.1)',
-          }}>
-            🔮
+      <div className="bg-mesh min-h-screen pt-16 flex flex-col items-center justify-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-slate-950/40 backdrop-blur-sm z-0"></div>
+        <div className="animate-fade-in relative z-10 flex flex-col items-center max-w-sm w-full mx-auto text-center glass-card p-12 shadow-2xl">
+          <div className="w-24 h-24 rounded-full bg-indigo-500/10 border border-indigo-400/30 flex items-center justify-center mb-8 relative">
+             <Hexagon className="w-12 h-12 text-indigo-400 animate-spin-slow" />
+             <div className="absolute inset-0 rounded-full border-t-2 border-emerald-400 animate-spin"></div>
           </div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.75rem' }}>
-            正在分析你的职业画像...
+          <h2 className="text-2xl font-black mb-3 text-white text-contrast-shadow tracking-wide">
+            正在解算个人级特征矩阵...
           </h2>
-          <p style={{ color: 'var(--color-text-secondary)' }}>
-            系统正在综合计算匹配度，请稍候
+          <p className="text-white/60 mb-10 text-sm font-bold tracking-widest">
+            正在调集数据引擎提取拟合度指标
           </p>
-          <div className="progress-bar" style={{ maxWidth: '300px', margin: '1.5rem auto 0' }}>
+          <div className="progress-bar max-w-xs h-2 bg-white/10 w-full overflow-hidden border border-white/5">
             <div
-              className="progress-bar-fill"
+              className="progress-bar-fill h-full bg-gradient-to-r from-emerald-500 to-indigo-500 shadow-[0_0_15px_rgba(52,211,153,0.8)] rounded-full"
               style={{
                 width: '80%',
-                animation: 'gradient-shift 2s ease infinite',
-                backgroundSize: '200% 200%',
+                animation: 'gradient-shift 1.5s ease infinite alternate'
               }}
             />
           </div>
@@ -222,91 +212,77 @@ const AssessmentPage: React.FC = () => {
     );
   }
 
+  const SectionIcon = sectionIconMap[section];
+
   return (
-    <div className="bg-mesh" style={{ minHeight: '100vh', paddingTop: '64px' }}>
-      <div className="container" style={{ maxWidth: '720px', padding: '2rem 1.5rem 4rem' }}>
+    <div className="bg-mesh min-h-screen pt-24 pb-16">
+      <div className="container max-w-3xl mx-auto px-4">
         {/* Progress */}
-        <div style={{ marginBottom: '2rem' }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            marginBottom: '0.75rem',
-            alignItems: 'center',
-          }}>
-            <span style={{ fontSize: '0.85rem', color: 'var(--color-text-secondary)' }}>
-              测评进度
+        <div className="mb-10 animate-fade-in-up">
+          <div className="flex justify-between items-end mb-3">
+            <span className="text-xs font-black tracking-widest text-white/50 uppercase">
+              采集进度
             </span>
-            <span style={{ fontSize: '0.85rem', color: 'var(--color-primary-light)', fontWeight: 600 }}>
+            <span className="text-sm font-black text-emerald-400">
               {currentSection + 1} / {totalSections}
             </span>
           </div>
-          <div className="progress-bar">
-            <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+          <div className="progress-bar h-2 bg-white/10 w-full shadow-inner border border-white/5">
+            <div className="progress-bar-fill h-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)] transition-all duration-500" style={{ width: `${progress}%` }} />
           </div>
           {/* Section tabs */}
-          <div style={{
-            display: 'flex',
-            gap: '0.5rem',
-            marginTop: '1rem',
-            flexWrap: 'wrap',
-          }}>
-            {sectionOrder.map((s, i) => (
-              <button
-                key={s}
-                type="button"
-                onClick={() => {
-                  if (i < currentSection) setCurrentSection(i);
-                }}
-                style={{
-                  padding: '0.375rem 0.75rem',
-                  borderRadius: 'var(--radius-full)',
-                  border: 'none',
-                  fontSize: '0.8rem',
-                  cursor: i <= currentSection ? 'pointer' : 'default',
-                  background: i === currentSection
-                    ? 'rgba(99, 102, 241, 0.2)'
-                    : i < currentSection
-                      ? 'rgba(16, 185, 129, 0.15)'
-                      : 'var(--color-bg-tertiary)',
-                  color: i === currentSection
-                    ? 'var(--color-primary-light)'
-                    : i < currentSection
-                      ? 'var(--color-success)'
-                      : 'var(--color-text-muted)',
-                  fontWeight: i === currentSection ? 600 : 400,
-                }}
-              >
-                {sectionInfo[s].icon} {sectionInfo[s].title}
-                {i < currentSection && ' ✓'}
-              </button>
-            ))}
+          <div className="flex gap-2 mt-6 flex-wrap justify-center">
+            {sectionOrder.map((s, i) => {
+               const TabIcon = sectionIconMap[s];
+               const isActive = i === currentSection;
+               const isCompleted = i < currentSection;
+               return (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => {
+                    if (isCompleted) setCurrentSection(i);
+                  }}
+                  className={`flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold transition-all duration-300 ${
+                    isActive
+                      ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-lg'
+                      : isCompleted
+                        ? 'bg-white/10 text-white border border-white/20 hover:bg-white/20 cursor-pointer'
+                        : 'bg-black/20 text-white/30 border border-transparent cursor-not-allowed'
+                  }`}
+                >
+                  <TabIcon className="w-3.5 h-3.5" /> 
+                  <span className="hidden sm:inline">{sectionInfo[s].title}</span>
+                  {isCompleted && <Check className="w-3.5 h-3.5 ml-1 hidden sm:inline" />}
+                </button>
+              )
+            })}
           </div>
         </div>
 
         {/* Section Header */}
-        <div className="glass-card animate-fade-in" style={{ padding: '2rem', marginBottom: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '2rem' }}>{info.icon}</span>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 700, margin: 0 }}>{info.title}</h2>
+        <div className="glass-card p-8 mb-8 animate-fade-in flex items-center gap-6 shadow-xl border-white/20 relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full blur-3xl group-hover:bg-white/10 transition-colors"></div>
+          <div className="w-16 h-16 rounded-2xl glass-panel flex-shrink-0 flex items-center justify-center border-white/30 shadow-lg relative z-10">
+            <SectionIcon className="w-8 h-8 text-emerald-400" />
           </div>
-          <p style={{ color: 'var(--color-text-secondary)', margin: 0 }}>{info.description}</p>
+          <div className="relative z-10">
+            <h2 className="text-2xl font-black text-white mb-2 tracking-wide text-contrast-shadow">{info.title}</h2>
+            <p className="text-white/70 font-medium text-sm leading-relaxed">{info.description}</p>
+          </div>
         </div>
 
         {/* Section Content */}
-        <div className="animate-fade-in-up" style={{ opacity: 0, animationDelay: '0.1s' }}>
+        <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           {section === 'personality' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              {personalityQuestions.map(q => (
-                <div key={q.id} className="glass-card" style={{ padding: '1.5rem' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+            <div className="flex flex-col gap-6">
+              {personalityQuestions.map((q, idx) => (
+                <div key={q.id} className="glass-card p-8 group hover:border-white/30 transition-colors" style={{ animationDelay: `${idx * 0.05}s` }}>
+                  <h3 className="text-lg font-bold text-white mb-2 text-contrast-shadow">
                     {q.question}
                   </h3>
                   {q.description && (
-                    <p style={{
-                      color: 'var(--color-text-muted)',
-                      fontSize: '0.85rem',
-                      marginBottom: '1rem',
-                    }}>
+                    <p className="text-white/50 text-xs font-bold tracking-widest mb-6">
                       {q.description}
                     </p>
                   )}
@@ -320,25 +296,21 @@ const AssessmentPage: React.FC = () => {
           )}
 
           {section === 'skills' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              {skillQuestions.map(q => (
-                <div key={q.id} className="glass-card" style={{ padding: '1.5rem' }}>
-                  <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.5rem' }}>
+            <div className="flex flex-col gap-6">
+              {skillQuestions.map((q, idx) => (
+                <div key={q.id} className="glass-card p-8 group hover:border-white/30 transition-colors" style={{ animationDelay: `${idx * 0.05}s` }}>
+                  <h3 className="text-lg font-bold text-white mb-2 text-contrast-shadow">
                     {q.question}
                   </h3>
                   {q.description && (
-                    <p style={{
-                      color: 'var(--color-text-muted)',
-                      fontSize: '0.85rem',
-                      marginBottom: '1rem',
-                    }}>
+                    <p className="text-white/50 text-xs font-bold tracking-widest mb-6">
                       {q.description}
                     </p>
                   )}
                   <LikertScale
                     value={skills[q.field as keyof SkillsRating] || 0}
                     onChange={v => setSkills(prev => ({ ...prev, [q.field]: v }))}
-                    labels={['初学者', '精通']}
+                    labels={['基 础 了 解', '专 家 级 掌 握']}
                   />
                 </div>
               ))}
@@ -346,15 +318,17 @@ const AssessmentPage: React.FC = () => {
           )}
 
           {section === 'interests' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div className="glass-card" style={{ padding: '1.5rem' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.75rem' }}>
-                  你对以下哪些技术领域感兴趣？
-                  <span style={{ color: 'var(--color-text-muted)', fontWeight: 400, fontSize: '0.85rem' }}>
-                    （至少选2个）
+            <div className="flex flex-col gap-6">
+              <div className="glass-card p-8">
+                <div className="mb-6">
+                  <h3 className="text-lg font-bold text-white mb-2 text-contrast-shadow">
+                    偏好的技术赛道矩阵
+                  </h3>
+                  <span className="text-white/50 font-bold text-xs tracking-widest block">
+                    要求: 最少激活两个技术赛道信号
                   </span>
-                </h3>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                </div>
+                <div className="flex flex-wrap gap-3">
                   {interestOptions.map(opt => {
                     const selected = interests.selectedInterests.includes(opt);
                     return (
@@ -362,44 +336,34 @@ const AssessmentPage: React.FC = () => {
                         key={opt}
                         type="button"
                         onClick={() => toggleInterest(opt)}
-                        style={{
-                          padding: '0.5rem 1rem',
-                          borderRadius: 'var(--radius-full)',
-                          border: selected
-                            ? '1px solid var(--color-primary)'
-                            : '1px solid var(--color-border)',
-                          background: selected
-                            ? 'rgba(99, 102, 241, 0.2)'
-                            : 'transparent',
-                          color: selected
-                            ? 'var(--color-primary-light)'
-                            : 'var(--color-text-secondary)',
-                          cursor: 'pointer',
-                          fontSize: '0.85rem',
-                          fontWeight: selected ? 600 : 400,
-                          transition: 'all 0.2s ease',
-                        }}
+                        className={`px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 border shadow-lg ${
+                          selected
+                            ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400'
+                            : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:border-white/30'
+                        }`}
                       >
-                        {opt}
+                        {opt} {selected && <Check className="w-3 h-3 inline-block ml-1" />}
                       </button>
                     );
                   })}
                 </div>
                 {errors.interests && (
-                  <p style={{ color: 'var(--color-danger)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                  <p className="text-red-400 text-xs font-bold mt-4 tracking-wide">
                     {errors.interests}
                   </p>
                 )}
               </div>
 
-              <div className="glass-card" style={{ padding: '1.5rem' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '0.75rem' }}>
-                  你更倾向哪种工作类型？
-                  <span style={{ color: 'var(--color-text-muted)', fontWeight: 400, fontSize: '0.85rem' }}>
-                    （至少选1个）
+              <div className="glass-card p-8">
+                <div className="mb-6">
+                  <h3 className="text-lg font-bold text-white mb-2 text-contrast-shadow">
+                    操作模型倾向
+                  </h3>
+                  <span className="text-white/50 font-bold text-xs tracking-widest block">
+                    要求: 指定至少一个可容忍的开发节奏
                   </span>
-                </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                </div>
+                <div className="flex flex-col gap-3">
                   {workTypeOptions.map(opt => {
                     const selected = interests.workTypePreference.includes(opt.value as WorkType);
                     return (
@@ -407,32 +371,22 @@ const AssessmentPage: React.FC = () => {
                         key={opt.value}
                         type="button"
                         onClick={() => toggleWorkType(opt.value)}
-                        style={{
-                          padding: '0.75rem 1rem',
-                          borderRadius: 'var(--radius-md)',
-                          border: selected
-                            ? '1px solid var(--color-primary)'
-                            : '1px solid var(--color-border)',
-                          background: selected
-                            ? 'rgba(99, 102, 241, 0.12)'
-                            : 'transparent',
-                          color: selected
-                            ? 'var(--color-primary-light)'
-                            : 'var(--color-text-secondary)',
-                          cursor: 'pointer',
-                          fontSize: '0.9rem',
-                          textAlign: 'left',
-                          fontWeight: selected ? 500 : 400,
-                          transition: 'all 0.2s ease',
-                        }}
+                        className={`px-5 py-4 w-full rounded-xl flex items-center text-sm font-bold transition-all duration-300 border shadow-sm ${
+                          selected
+                            ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400'
+                            : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:border-white/30'
+                        }`}
                       >
-                        {selected ? '✓ ' : ''}{opt.label}
+                        <div className={`w-5 h-5 rounded-md border flex items-center justify-center mr-4 transition-colors ${selected ? 'border-emerald-400 bg-emerald-400/20 text-emerald-400' : 'border-white/30'}`}>
+                          {selected && <Check className="w-3.5 h-3.5" />}
+                        </div>
+                        {opt.label}
                       </button>
                     );
                   })}
                 </div>
                 {errors.workType && (
-                  <p style={{ color: 'var(--color-danger)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                  <p className="text-red-400 text-xs font-bold mt-4 tracking-wide">
                     {errors.workType}
                   </p>
                 )}
@@ -441,50 +395,50 @@ const AssessmentPage: React.FC = () => {
           )}
 
           {section === 'professional' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div className="glass-card" style={{ padding: '1.5rem' }}>
-                <label className="form-label">学历</label>
+            <div className="flex flex-col gap-6">
+              <div className="glass-card p-8">
+                <label className="form-label uppercase tracking-widest text-xs font-bold text-white/50">基础教育底座</label>
                 <select
-                  className="form-input"
+                  className="form-input text-white font-bold bg-slate-900/40 border-white/20 mt-2 hover:border-emerald-400/50 transition-colors cursor-pointer"
                   value={professional.education}
                   onChange={e => setProfessional(prev => ({
                     ...prev,
                     education: e.target.value as EducationLevel,
                   }))}
                 >
-                  <option value="highSchool">高中/中专</option>
-                  <option value="associate">大专</option>
-                  <option value="bachelor">本科</option>
-                  <option value="master">硕士</option>
-                  <option value="phd">博士</option>
+                  <option value="highSchool">高中/中专集群</option>
+                  <option value="associate">专科序列</option>
+                  <option value="bachelor">本科学位</option>
+                  <option value="master">硕士学位</option>
+                  <option value="phd">博士及以上理论层</option>
                 </select>
               </div>
 
-              <div className="glass-card" style={{ padding: '1.5rem' }}>
-                <label className="form-label">专业方向</label>
+              <div className="glass-card p-8">
+                <label className="form-label uppercase tracking-widest text-xs font-bold text-white/50">核心专业领域</label>
                 <select
-                  className="form-input"
+                  className="form-input text-white font-bold bg-slate-900/40 border-white/20 mt-2 hover:border-emerald-400/50 transition-colors cursor-pointer"
                   value={professional.major}
                   onChange={e => setProfessional(prev => ({ ...prev, major: e.target.value }))}
                 >
-                  <option value="">请选择专业</option>
+                  <option value="">-- 请求挂载专业体系 --</option>
                   {majorOptions.map(m => (
                     <option key={m} value={m}>{m}</option>
                   ))}
                 </select>
                 {errors.major && (
-                  <p style={{ color: 'var(--color-danger)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                  <p className="text-red-400 text-xs font-bold mt-4 tracking-wide">
                     {errors.major}
                   </p>
                 )}
               </div>
 
-              <div className="glass-card" style={{ padding: '1.5rem' }}>
-                <label className="form-label">当前阶段</label>
-                <div style={{ display: 'flex', gap: '1rem' }}>
+              <div className="glass-card p-8">
+                <label className="form-label uppercase tracking-widest text-xs font-bold text-white/50 mb-4">社会化接入阶段</label>
+                <div className="flex flex-col sm:flex-row gap-4">
                   {[
-                    { value: 'student', label: '在校学生' },
-                    { value: 'graduated', label: '已毕业' },
+                    { value: 'student', label: '实习节点 (在校数据流)' },
+                    { value: 'graduated', label: '实弹演练 (社会层接入)' },
                   ].map(opt => (
                     <button
                       key={opt.value}
@@ -493,24 +447,11 @@ const AssessmentPage: React.FC = () => {
                         ...prev,
                         stage: opt.value as 'student' | 'graduated',
                       }))}
-                      style={{
-                        flex: 1,
-                        padding: '0.75rem',
-                        borderRadius: 'var(--radius-md)',
-                        border: professional.stage === opt.value
-                          ? '1px solid var(--color-primary)'
-                          : '1px solid var(--color-border)',
-                        background: professional.stage === opt.value
-                          ? 'rgba(99, 102, 241, 0.15)'
-                          : 'transparent',
-                        color: professional.stage === opt.value
-                          ? 'var(--color-primary-light)'
-                          : 'var(--color-text-secondary)',
-                        cursor: 'pointer',
-                        fontWeight: 500,
-                        fontSize: '0.95rem',
-                        transition: 'all 0.2s ease',
-                      }}
+                      className={`flex-1 px-6 py-4 rounded-xl flex items-center justify-center text-sm font-bold transition-all duration-300 border shadow-sm ${
+                        professional.stage === opt.value
+                          ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400'
+                          : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:border-white/30'
+                      }`}
                     >
                       {opt.label}
                     </button>
@@ -521,123 +462,90 @@ const AssessmentPage: React.FC = () => {
           )}
 
           {section === 'location' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-              <div className="glass-card" style={{ padding: '1.5rem' }}>
-                <label className="form-label">期望工作城市</label>
+            <div className="flex flex-col gap-6">
+              <div className="glass-card p-8">
+                <label className="form-label uppercase tracking-widest text-xs font-bold text-white/50">物理主控节点城市</label>
                 <select
-                  className="form-input"
+                  className="form-input text-white font-bold bg-slate-900/40 border-white/20 mt-2 hover:border-emerald-400/50 transition-colors cursor-pointer"
                   value={location.city}
                   onChange={e => setLocation(prev => ({ ...prev, city: e.target.value }))}
                 >
-                  <option value="">请选择城市</option>
+                  <option value="">-- 选择期望降落服务器 --</option>
                   {cityOptions.map(c => (
                     <option key={c} value={c}>{c}</option>
                   ))}
                 </select>
                 {errors.city && (
-                  <p style={{ color: 'var(--color-danger)', fontSize: '0.85rem', marginTop: '0.5rem' }}>
+                  <p className="text-red-400 text-xs font-bold mt-4 tracking-wide">
                     {errors.city}
                   </p>
                 )}
               </div>
 
-              <div className="glass-card" style={{ padding: '1.5rem' }}>
-                <label className="form-label">是否接受远程工作</label>
+              <div className="glass-card p-8">
+                <label className="form-label uppercase tracking-widest text-xs font-bold text-white/50 mb-4">远程接入权限许可</label>
                 <button
                   type="button"
                   onClick={() => setLocation(prev => ({ ...prev, acceptRemote: !prev.acceptRemote }))}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 1rem',
-                    borderRadius: 'var(--radius-md)',
-                    border: location.acceptRemote
-                      ? '1px solid var(--color-success)'
-                      : '1px solid var(--color-border)',
-                    background: location.acceptRemote
-                      ? 'rgba(16, 185, 129, 0.12)'
-                      : 'transparent',
-                    color: location.acceptRemote
-                      ? 'var(--color-success)'
-                      : 'var(--color-text-secondary)',
-                    cursor: 'pointer',
-                    fontSize: '0.95rem',
-                    textAlign: 'left',
-                    transition: 'all 0.2s ease',
-                  }}
+                  className={`px-5 py-4 w-full rounded-xl flex items-center gap-4 text-sm font-bold transition-all duration-300 border shadow-sm ${
+                    location.acceptRemote
+                      ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-400'
+                      : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10 hover:border-white/30'
+                  }`}
                 >
-                  {location.acceptRemote ? '✓ 接受远程工作' : '不接受远程工作'}
+                  <div className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors ${location.acceptRemote ? 'border-emerald-400 bg-emerald-400/20 text-emerald-400' : 'border-white/30'}`}>
+                    {location.acceptRemote && <Check className="w-3.5 h-3.5" />}
+                  </div>
+                  {location.acceptRemote ? '已授权：允许通过网络协议进行分布式任务输出' : '未授权：限制本地全职作业环境'}
                 </button>
               </div>
 
-              <div className="glass-card" style={{ padding: '1.5rem' }}>
-                <label className="form-label">期望薪资范围</label>
+              <div className="glass-card p-8">
+                <label className="form-label uppercase tracking-widest text-xs font-bold text-white/50">能源配给基准值 (薪资期望)</label>
                 <select
-                  className="form-input"
+                  className="form-input text-white font-bold bg-slate-900/40 border-white/20 mt-2 hover:border-emerald-400/50 transition-colors cursor-pointer"
                   value={location.salaryRange}
                   onChange={e => setLocation(prev => ({
                     ...prev,
                     salaryRange: e.target.value as SalaryRange,
                   }))}
                 >
-                  <option value="below8k">8K以下</option>
-                  <option value="8k-15k">8K - 15K</option>
-                  <option value="15k-25k">15K - 25K</option>
-                  <option value="25k-40k">25K - 40K</option>
-                  <option value="above40k">40K以上</option>
+                  <option value="below8k">8K 阈值以下基座保障</option>
+                  <option value="8k-15k">8K - 15K 常规执行区间</option>
+                  <option value="15k-25k">15K - 25K 高级算力供给</option>
+                  <option value="25k-40k">25K - 40K 专家级引擎超频档</option>
+                  <option value="above40k">40K 以上结构领袖梯队</option>
                 </select>
               </div>
             </div>
           )}
         </div>
 
-        {/* Error summary */}
-        {Object.keys(errors).length > 0 && errors.personality && (
-          <div style={{
-            marginTop: '1rem',
-            padding: '0.75rem 1rem',
-            background: 'rgba(239, 68, 68, 0.1)',
-            border: '1px solid rgba(239, 68, 68, 0.2)',
-            borderRadius: 'var(--radius-md)',
-            color: 'var(--color-danger)',
-            fontSize: '0.85rem',
-          }}>
-            {errors.personality}
-          </div>
-        )}
-        {errors.skills && (
-          <div style={{
-            marginTop: '1rem',
-            padding: '0.75rem 1rem',
-            background: 'rgba(239, 68, 68, 0.1)',
-            border: '1px solid rgba(239, 68, 68, 0.2)',
-            borderRadius: 'var(--radius-md)',
-            color: 'var(--color-danger)',
-            fontSize: '0.85rem',
-          }}>
-            {errors.skills}
+        {/* Global Error summary */}
+        {Object.keys(errors).length > 0 && (
+          <div className="mt-8 bg-red-500/10 border border-red-500/30 rounded-xl p-6 shadow-xl backdrop-blur-md animate-fade-in text-center">
+             <h4 className="text-red-400 font-bold mb-2">系统警告：信息输入不合规</h4>
+             <p className="text-red-300 text-sm font-medium tracking-wide">存在缺失的核心测量特征，请依照页面红色提示纠正输入项，以便引擎启动解算。</p>
           </div>
         )}
 
         {/* Navigation buttons */}
-        <div style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          marginTop: '2rem',
-          gap: '1rem',
-        }}>
+        <div className="flex flex-col-reverse sm:flex-row justify-between items-center mt-12 gap-4">
           <button
-            className="btn-secondary"
+            className="btn-secondary h-14 w-full sm:w-auto px-8 flex items-center justify-center border-white/20 hover:border-white/40 group text-white/80"
             onClick={handlePrev}
             disabled={currentSection === 0}
             style={{ opacity: currentSection === 0 ? 0.3 : 1 }}
           >
-            ← 上一步
+            <ChevronLeft className="w-5 h-5 mr-2 group-hover:-translate-x-1 transition-transform" /> 退回拦截点
           </button>
           <button
-            className="btn-primary"
+            className="btn-primary h-14 w-full sm:w-auto px-8 text-lg flex items-center justify-center shadow-[0_0_20px_rgba(255,255,255,0.2)] group"
             onClick={handleNext}
           >
-            {currentSection === totalSections - 1 ? '🔮 提交并计算' : '下一步 →'}
+            {currentSection === totalSections - 1 
+              ? <><Sparkles className="w-5 h-5 mr-2" /> 触发主引擎运算</> 
+              : <>推送下一梯队数据 <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" /></>}
           </button>
         </div>
       </div>

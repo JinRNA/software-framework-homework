@@ -1,75 +1,49 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { Home, ClipboardList, FileText, Target, LayoutDashboard, Sparkles } from 'lucide-react';
 
 const navItems = [
-  { path: '/', label: '首页', icon: '🏠' },
-  { path: '/assessment', label: '测评', icon: '📝' },
-  { path: '/report', label: '报告', icon: '📊' },
-  { path: '/selection', label: '方向选择', icon: '🎯' },
-  { path: '/dashboard', label: '面板', icon: '📈' },
+  { path: '/', label: '首页', icon: Home },
+  { path: '/assessment', label: '测评大厅', icon: ClipboardList },
+  { path: '/report', label: '深度报告', icon: FileText },
+  { path: '/selection', label: '职业方向', icon: Target },
+  { path: '/dashboard', label: '数据看板', icon: LayoutDashboard },
 ];
 
 const Navbar: React.FC = () => {
   const location = useLocation();
 
   return (
-    <nav
-      style={{
-        position: 'fixed',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 100,
-        background: 'rgba(15, 23, 42, 0.85)',
-        backdropFilter: 'blur(16px)',
-        borderBottom: '1px solid var(--color-border)',
-      }}
-    >
-      <div className="container" style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        height: '64px',
-      }}>
-        <Link to="/" style={{ textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '1.5rem' }}>✨</span>
-          <span style={{
-            fontWeight: 700,
-            fontSize: '1.1rem',
-            background: 'linear-gradient(135deg, #818cf8, #22d3ee)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}>
-            人才素描
-          </span>
-        </Link>
+    <nav className="fixed top-0 left-0 right-0 z-50 px-4 py-3">
+      <div className="container mx-auto max-w-7xl">
+        <div className="glass-panel flex items-center justify-between h-16 px-6 shadow-xl">
+          <Link to="/" className="flex flex-row items-center gap-2 hover:opacity-80 transition-opacity">
+            <Sparkles className="w-5 h-5 text-white" />
+            <span className="font-extrabold text-lg tracking-wide text-white text-contrast-shadow">
+              人才素描
+            </span>
+          </Link>
 
-        <div style={{ display: 'flex', gap: '0.25rem' }}>
-          {navItems.map(item => {
-            const isActive = location.pathname === item.path;
-            return (
-              <Link
-                key={item.path}
-                to={item.path}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.375rem',
-                  padding: '0.5rem 1rem',
-                  borderRadius: 'var(--radius-md)',
-                  textDecoration: 'none',
-                  fontSize: '0.875rem',
-                  fontWeight: isActive ? 600 : 400,
-                  color: isActive ? 'var(--color-primary-light)' : 'var(--color-text-secondary)',
-                  background: isActive ? 'rgba(99, 102, 241, 0.12)' : 'transparent',
-                  transition: 'all 0.2s ease',
-                }}
-              >
-                <span>{item.icon}</span>
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
+          <div className="flex items-center gap-2">
+            {navItems.map(item => {
+              const isActive = location.pathname === item.path;
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm transition-all duration-300 font-bold ${
+                    isActive 
+                      ? 'bg-white/20 text-white shadow-[0_0_10px_rgba(255,255,255,0.1)] border border-white/30' 
+                      : 'text-white/70 hover:bg-white/10 hover:text-white border border-transparent'
+                  }`}
+                >
+                  <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-white/70'}`} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </div>
     </nav>

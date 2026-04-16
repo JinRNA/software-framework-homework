@@ -8,7 +8,7 @@ import ScoreRing from '../components/ScoreRing';
 import { storageService } from '../services/storage';
 import { careerTags } from '../data/careers';
 import type { MatchResult } from '../types';
-import { FileText, Target, Trophy, ChartBar, Check, TrendingUp, Cpu, Workflow, CircleDot, Star } from 'lucide-react';
+import { FileText, Target, Trophy, ChartBar, Check, Cpu, Workflow, CircleDot, Star } from 'lucide-react';
 
 const ReportPage: React.FC = () => {
   const navigate = useNavigate();

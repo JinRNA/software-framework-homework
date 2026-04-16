@@ -7,7 +7,7 @@ import {
 import ScoreRing from '../components/ScoreRing';
 import { storageService } from '../services/storage';
 import { careerTags } from '../data/careers';
-import { Rocket, Target, BarChart2, Star, Sparkles, TrendingUp, Puzzle, FileText, Compass, BookOpen, Fingerprint, LayoutDashboard, Zap, Bell } from 'lucide-react';
+import { Rocket, Target, Star, Sparkles, TrendingUp, Puzzle, FileText, Compass, BookOpen, Fingerprint, LayoutDashboard, Zap, Bell } from 'lucide-react';
 
 const DashboardPage: React.FC = () => {
   const navigate = useNavigate();
